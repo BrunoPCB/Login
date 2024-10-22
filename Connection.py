@@ -8,14 +8,10 @@ class ConnectDatabase:
         self.__config = {}
 
     @property
-    def config(self):
-        return self.__config
-
-    @property
     def connection(self):
         return self.__connection
 
-    def get_config(self):
+    def __get_config(self):
         # Search for config data, to open the database
         self.__lines = None
         with open('config.con') as conf:
@@ -35,7 +31,7 @@ class ConnectDatabase:
 
     def connect(self):
         try:
-            self.get_config()
+            self.__get_config()
             self.__connection = connection.MySQLConnection(**self.__config)
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -44,7 +40,6 @@ class ConnectDatabase:
                 print('Database does not exists.')
             else:
                 print(f'Error: {err.msg}')
-        return False
 
 
     def close_connection(self):
