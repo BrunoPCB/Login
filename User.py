@@ -5,10 +5,18 @@ from Utils import DB_USER
 
 class User:
     def __init__(self):
+        # self.__id = 0
         self.__username = ''
         self.__password = ''
 
     # --------- Getter/Setters --------- #
+    # @property
+    # def id(self):
+    #     return self.__id
+    #
+    # @id.setter
+    # def id(self, code):
+    #     self.__id = code
 
     @property
     def username(self):
@@ -56,7 +64,7 @@ class User:
             myconnection.close_connection()
 
     def select_data(self):
-        query = f"SELECT user_name, pass_word FROM {DB_USER}"
+        query = f"SELECT id, user_name, pass_word FROM {DB_USER}"
         data = []
 
         myconnection = ConnectDatabase()
@@ -66,19 +74,48 @@ class User:
 
             cursor.execute(query)
 
-            for us, ps in cursor:
-                data.append([us, ps])
+            for code, us, ps in cursor:
+                data.append([code, us, ps])
 
             return data
 
         finally:
             myconnection.close_connection()
-        pass
 
-    def update_data(self):
-        # Here goes data update
-        pass
+    def update_data(self, code):
+        query = (f"UPDATE {DB_USER} "
+                 f"SET user_name = '{self.__username}', pass_word = '{self.__password}' "
+                 f"WHERE id = {code}")
 
-    def delete_data(self):
-        # Here goes the delete of data
+        myconnection = ConnectDatabase()
+        try:
+            myconnection.connect()
+            cursor = myconnection.connection.cursor()
+
+            cursor.execute(query)
+
+            myconnection.connection.commit()
+        finally:
+            myconnection.close_connection()
+
+    def delete_data(self, code, code_end=0):
+        if code_end != 0:
+            query = (f"DELETE FROM {DB_USER} "
+                     f"WHERE id BETWEEN {code} AND {code_end}")
+            #values = (code, code_end)
+        else:
+            query = (f"DELETE FROM {DB_USER} "
+                     f"WHERE id = {code}")
+            #values = code
+
+        myconnection = ConnectDatabase()
+        try:
+            myconnection.connect()
+            cursor = myconnection.connection.cursor()
+
+            cursor.execute(query)
+
+            myconnection.connection.commit()
+        finally:
+            myconnection.close_connection()
         pass
