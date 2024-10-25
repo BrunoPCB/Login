@@ -39,7 +39,12 @@ class User:
     def login_verification(self):
         # here goes the verification in the database, if
         # there is an account
-        pass
+        search_data = True
+
+        select_return = self.select_data(search_data)
+
+        return len(select_return) > 0
+
 
     def encrypt_password(self):
         # here we will encrypt our password, to make it safer
@@ -60,11 +65,15 @@ class User:
             cursor.execute(query, values)
 
             myconnection.connection.commit()
+        except myconnection.connection.IntegrityError:
+            print("Failed to insert values")
         finally:
             myconnection.close_connection()
 
-    def select_data(self):
-        query = f"SELECT id, user_name, pass_word FROM {DB_USER}"
+    def select_data(self, where_clause=False):
+        query = f"SELECT id, user_name, pass_word FROM {DB_USER} "
+        if where_clause:
+            query += f"WHERE user_name = \'{self.__username}\' and pass_word = \'{self.__password}\'"
         data = []
 
         myconnection = ConnectDatabase()
